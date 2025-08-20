@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +62,27 @@ export default function MealPlannerApp() {
   const [mealNote, setMealNote] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [randomSuggestion, setRandomSuggestion] = useState("");
+
+  // Cargar comidas guardadas desde localStorage al montar
+  useEffect(() => {
+    try {
+      const storedMeals = localStorage.getItem("weeklyMeals");
+      if (storedMeals) {
+        setMeals(JSON.parse(storedMeals));
+      }
+    } catch {
+      // Silenciar errores de acceso a localStorage (modo SSR/privado)
+    }
+  }, []);
+
+  // Guardar cambios de comidas en localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("weeklyMeals", JSON.stringify(meals));
+    } catch {
+      // Silenciar errores de almacenamiento (cuota/privado)
+    }
+  }, [meals]);
 
   const addMeal = () => {
     if (!selectedDay || !mealName.trim()) return;
